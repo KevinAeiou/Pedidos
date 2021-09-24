@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Pedidos</string>
+    <string name="action_settings">Settings</string>
+    <string name="txt_nome_produto">Nome Produto</string>
+    <string name="txt_valor_produto">Valor</string>
+    <string name="title_action_ok">Ok</string>
+    <string name="title_action_excluir">Excluir</string>
+    <string name="txtNome">Nome</string>
+    <string name="txtEmail">Email</string>
+    <string name="txtSenha">Senha</string>
+    <string name="txtTitulo">Olá</string>
+    <string name="txtSubtitulo">Entre em sua conta</string>
+    <string name="txtEsqSenha">Esqueceu sua senha?</string>
+    <string name="btnEntrar">Entrar</string>
+    <string name="btnCadastrar">Cadastrar</string>
+    <string name="txtRodape">Não possui uma conta?</string>
+    <string name="txtLinkRodape"><u>Cadastre-se</u></string>
+    <string name="txtRodape2">Já possui uma conta?</string>
+    <string name="txtLinkRodape2"><u>Entre</u></string>
+    <string name="txtTitulo2">Criar conta</string>
+    <string name="txtDeslogar"><u>Deslogar</u></string>
+</resources>

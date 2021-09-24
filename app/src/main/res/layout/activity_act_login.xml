@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_app"
+        tools:context=".ActLogin">
+
+        <View
+            android:id="@+id/conteinerComponentes"
+            style="@style/conteinerComponentes"
+            android:layout_height="425dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txtTitulo"
+            style="@style/txtTitulo"
+            android:text="@string/txtTitulo"
+            app:layout_constraintStart_toStartOf="@id/conteinerComponentes"
+            app:layout_constraintEnd_toEndOf="@id/conteinerComponentes"
+            app:layout_constraintTop_toTopOf="@id/conteinerComponentes" />
+
+        <TextView
+            android:id="@+id/txtSubTitulo"
+            style="@style/txtSubTitulo"
+            android:text="@string/txtSubtitulo"
+            app:layout_constraintStart_toStartOf="@id/conteinerComponentes"
+            app:layout_constraintEnd_toEndOf="@id/conteinerComponentes"
+            app:layout_constraintTop_toBottomOf="@id/txtTitulo"/>
+
+        <EditText
+            android:id="@+id/edtEmail"
+            style="@style/edtText"
+            android:hint="@string/txtEmail"
+            android:maxLength="20"
+            android:inputType="textEmailAddress"
+            android:layout_marginTop="35dp"
+            app:layout_constraintStart_toStartOf="@id/conteinerComponentes"
+            app:layout_constraintEnd_toEndOf="@id/conteinerComponentes"
+            app:layout_constraintTop_toBottomOf="@id/txtSubTitulo"/>
+
+        <EditText
+            android:id="@+id/edtSenha"
+            style="@style/edtText"
+            android:hint="@string/txtSenha"
+            android:maxLength="20"
+            android:drawableEnd="@drawable/ic_eyes"
+            android:inputType="textPassword"
+            app:layout_constraintStart_toStartOf="@id/conteinerComponentes"
+            app:layout_constraintEnd_toEndOf="@id/conteinerComponentes"
+            app:layout_constraintTop_toBottomOf="@id/edtEmail"/>
+
+        <TextView
+            android:id="@+id/txtEsqSenha"
+            android:layout_marginTop="18dp"
+            android:layout_marginRight="40dp"
+            android:textSize="17sp"
+            android:gravity="end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edtSenha"
+            android:text="@string/txtEsqSenha"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnLogar"
+            style="@style/btn"
+            android:text="@string/btnEntrar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtEsqSenha"/>
+
+        <TextView
+            android:id="@+id/txtRodape"
+            style="@style/txtRodape"
+            android:gravity="end"
+            android:textSize="18sp"
+            android:text="@string/txtRodape"
+            app:layout_constraintEnd_toStartOf="@id/txtLinkCasdastro"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/conteinerComponentes"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+            android:id="@+id/txtLinkCasdastro"
+            style="@style/txtRodape"
+            android:gravity="start"
+            android:text="@string/txtLinkRodape"
+            android:textSize="18sp"
+            android:textColor="@color/branco"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/txtRodape"
+            app:layout_constraintTop_toBottomOf="@id/conteinerComponentes"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
