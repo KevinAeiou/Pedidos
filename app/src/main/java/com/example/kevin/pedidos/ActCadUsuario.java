@@ -73,36 +73,34 @@ public class ActCadUsuario extends AppCompatActivity implements View.OnClickList
 
         if (!verificaCampos(nome, email, senha)){
             Snackbar snackbar = Snackbar.make(v, menssagens[0], Snackbar.LENGTH_SHORT);
-            snackbar.setActionTextColor(Color.WHITE);
+            snackbar.setBackgroundTint(Color.WHITE);
+            snackbar.setTextColor(Color.BLACK);
             snackbar.show();
         }else  {
-            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, senha).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
+            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, senha).addOnCompleteListener(task -> {
 
-                    if (task.isSuccessful()){
-                        salvarDadosUsuario();
-                        startActivity(new Intent(ActCadUsuario.this, ActLogin.class));
-                        finish();
-                    }else{
-                        String erro;
-                        try{
-                            throw task.getException();
-                        }catch (FirebaseAuthWeakPasswordException e){
-                            erro = "A senha deve conter no mínimo 8 caracteres!";
-                        } catch (FirebaseAuthUserCollisionException e){
-                            erro = "Conta já cadastrada!";
-                        }catch (FirebaseAuthInvalidCredentialsException e) {
-                            erro = "Email inválido!";
-                        }catch (Exception e) {
-                            erro = "Erro ao cadastrar usuário";
-                        }
-
-                        Snackbar snackbar = Snackbar.make(v, erro, Snackbar.LENGTH_SHORT);
-                        snackbar.setBackgroundTint(Color.WHITE);
-                        snackbar.setTextColor(Color.BLACK);
-                        snackbar.show();
+                if (task.isSuccessful()){
+                    salvarDadosUsuario();
+                    startActivity(new Intent(ActCadUsuario.this, ActLogin.class));
+                    finish();
+                }else{
+                    String erro;
+                    try{
+                        throw task.getException();
+                    }catch (FirebaseAuthWeakPasswordException e){
+                        erro = "A senha deve conter no mínimo 8 caracteres!";
+                    } catch (FirebaseAuthUserCollisionException e){
+                        erro = "Conta já cadastrada!";
+                    }catch (FirebaseAuthInvalidCredentialsException e) {
+                        erro = "Email inválido!";
+                    }catch (Exception e) {
+                        erro = "Erro ao cadastrar usuário";
                     }
+
+                    Snackbar snackbar = Snackbar.make(v, erro, Snackbar.LENGTH_SHORT);
+                    snackbar.setBackgroundTint(Color.WHITE);
+                    snackbar.setTextColor(Color.BLACK);
+                    snackbar.show();
                 }
             });
         }
@@ -119,17 +117,8 @@ public class ActCadUsuario extends AppCompatActivity implements View.OnClickList
         usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         DocumentReference documentReference = db.collection("Usuario").document(usuarioId);
-        documentReference.set(usuarios).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("db", "Sucesso!");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("db", "Erro ao salvar!" + e.toString());
-            }
-        });
+        documentReference.set(usuarios).addOnSuccessListener(aVoid -> Log.d("db", "Sucesso!"))
+                .addOnFailureListener(e -> Log.d("db", "Erro ao salvar!" + e.toString()));
     }
 
     private boolean verificaCampos(String nome, String email, String senha) {

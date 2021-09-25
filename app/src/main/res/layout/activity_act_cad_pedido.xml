@@ -55,14 +55,13 @@
             android:layout_weight="1"
             android:inputType="numberDecimal"
             android:layout_marginRight="15dp"
-            android:hint="Valor" />
+            android:hint="@string/txt_valor_produto" />
 
-        <EditText
+        <Spinner
             android:id="@+id/edtQuant"
             android:layout_weight="2"
-            android:inputType="number"
-            style="@style/edtText2"
-            android:hint="Quant"/>
+            android:padding="8dp"
+            style="@style/edtText2"/>
     </LinearLayout>
 
     <LinearLayout
