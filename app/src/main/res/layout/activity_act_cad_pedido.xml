@@ -10,58 +10,72 @@
     <View
         android:id="@+id/containeComponetes"
         android:background="@drawable/conteiner_componentes2"
-        android:layout_height="500dp"
+        android:layout_height="450dp"
         android:layout_margin="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLay"
         android:layout_width="match_parent"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_pedidos"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="@id/containeComponetes"
+        app:layout_constraintEnd_toEndOf="@id/containeComponetes"
+        app:layout_constraintBottom_toBottomOf="@id/containeComponetes"/>
 
     <EditText
         android:id="@+id/edtCliente"
         style="@style/edtText2"
         android:inputType="textPersonName"
-        android:hint="Nome do cliente"
+        android:hint="Cliente"
+        android:maxLength="20"
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="40dp"
-        app:layout_constraintStart_toStartOf="@id/containeComponetes"
-        app:layout_constraintEnd_toEndOf="@id/containeComponetes"
-        app:layout_constraintTop_toTopOf="@id/containeComponetes"/>
-    <EditText
-        android:id="@+id/edtNomeProduto"
-        style="@style/edtText2"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp"
-        android:hint="Nome do produto"
-        app:layout_constraintStart_toStartOf="@id/containeComponetes"
-        app:layout_constraintEnd_toEndOf="@id/containeComponetes"
-        app:layout_constraintTop_toBottomOf="@id/edtCliente"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
 
     <LinearLayout
         android:id="@+id/linearLay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/containeComponetes"
-        app:layout_constraintEnd_toEndOf="@id/containeComponetes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:orientation="horizontal"
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/edtNomeProduto">
-
-        <EditText
-            android:id="@+id/edtValor"
-            style="@style/edtText2"
-            android:layout_weight="1"
-            android:inputType="numberDecimal"
-            android:layout_marginRight="15dp"
-            android:hint="@string/txt_valor_produto" />
+        app:layout_constraintTop_toBottomOf="@+id/edtCliente">
 
         <Spinner
             android:id="@+id/edtQuant"
             android:layout_weight="2"
-            android:padding="8dp"
-            style="@style/edtText2"/>
+            style="@style/edtText2"
+            android:padding="8dp"/>
+
+        <EditText
+            android:id="@+id/edtNomeProduto"
+            android:layout_weight="1.2"
+            style="@style/edtText2"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
+            android:maxLength="20"
+            android:singleLine="true"
+            android:hint="Produto"/>
+
+        <EditText
+            android:id="@+id/edtValor"
+            style="@style/edtText2"
+            android:maxLength="6"
+            android:layout_weight="1.8"
+            android:inputType="numberDecimal"
+            android:hint="@string/txt_valor_produto" />
+
     </LinearLayout>
 
     <LinearLayout

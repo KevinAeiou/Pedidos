@@ -34,7 +34,6 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.meuViewHol
 
         Pedido pedido = pedidos.get(position);
 
-        holder.nomeCliente.setText(pedido.getNomeCliente());
         holder.nomeProduto.setText(pedido.getNomeProduto());
         holder.valor.setText(String.valueOf(pedido.getValor()));
         holder.quantidade.setText(String.valueOf(pedido.getQuantidade()));
@@ -45,14 +44,12 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.meuViewHol
         return pedidos.size();
     }
     public class meuViewHolder extends RecyclerView.ViewHolder{
-        TextView nomeCliente;
         TextView nomeProduto;
         TextView valor;
         TextView quantidade;
 
         public meuViewHolder(@NonNull View itemView) {
             super(itemView);
-            nomeCliente = itemView.findViewById(R.id.txtItemNomeCli);
             nomeProduto = itemView.findViewById(R.id.txtItemNomeProd);
             valor = itemView.findViewById(R.id.txtItemValor);
             quantidade = itemView.findViewById(R.id.txtItemQuant);

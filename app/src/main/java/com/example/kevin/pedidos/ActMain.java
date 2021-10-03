@@ -6,15 +6,25 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,8 +35,8 @@ public class ActMain extends AppCompatActivity {
     private RecyclerView rv;
 
     //Teste de recyclerview
-    ArrayList<Pedido> listaPedidos;
-    PedidoAdapter myAdapter;
+    ArrayList<Cliente> listaClientes;
+    ClienteAdapter myAdapter;
     FirebaseFirestore db;
     String usuarioId;
     ProgressDialog progressDialog;
@@ -53,16 +63,18 @@ public class ActMain extends AppCompatActivity {
         });
 
         //RecyclerView
+
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Carregando dados...");
         progressDialog.show();
 
+
         rv.setHasFixedSize(true);
         rv.setLayoutManager(new LinearLayoutManager(this));
 
-        listaPedidos = new ArrayList<>();
-        myAdapter = new PedidoAdapter(ActMain.this, listaPedidos);
+        listaClientes = new ArrayList<>();
+        myAdapter = new ClienteAdapter(ActMain.this, listaClientes);
         rv.setAdapter(myAdapter);
 
         EventChangeListener();
@@ -84,31 +96,35 @@ public class ActMain extends AppCompatActivity {
         });*/
     }
 
-    private void EventChangeListener() {
+private void EventChangeListener() {
 
         db = FirebaseFirestore.getInstance();
         usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         ///Usuario/7yEjH5xoS5emCo8f88sN1x4j1wG3/Pedidos
-        db.collection( "Usuario/" + usuarioId + "/Pedidos")
-                .orderBy("nomeCliente", Query.Direction.ASCENDING)
-                .addSnapshotListener((value, error) -> {
+        ///Usuario/7yEjH5xoS5emCo8f88sN1x4j1wG3/Clientes/HqOSQOwg7gMKUqhQMas1/Pedidos
 
+        db.collection("Usuario/" + usuarioId + "/Clientes")
+                .orderBy("nomeCliente")
+            .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot value,
+                                    @Nullable FirebaseFirestoreException error) {
                     if (error !=null){
                         if (progressDialog.isShowing())
                             progressDialog.dismiss();
                         Log.e("Firestore erro!", "erro!"+error.getMessage());
                         return;
                     }
-                    for (DocumentChange dc: value.getDocumentChanges()) {
-
-                        if (dc.getType() == DocumentChange.Type.ADDED){
-                            listaPedidos.add(dc.getDocument().toObject(Pedido.class));
+                    for (DocumentChange doc : value.getDocumentChanges()) {
+                        if (doc.getType() == DocumentChange.Type.ADDED){
+                            listaClientes.add(doc.getDocument().toObject(Cliente.class));
                         }
                         myAdapter.notifyDataSetChanged();
                         if (progressDialog.isShowing())
                             progressDialog.dismiss();
                     }
-                });
+                }
+            });
     }
 
     @Override

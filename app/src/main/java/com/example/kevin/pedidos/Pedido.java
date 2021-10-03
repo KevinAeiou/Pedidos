@@ -2,7 +2,6 @@ package com.example.kevin.pedidos;
 
 public class Pedido {
 
-    private String nomeCliente;
     private String nomeProduto;
     private long valor;
 
@@ -15,14 +14,6 @@ public class Pedido {
     }
 
     private long quantidade;
-
-    public String getNomeCliente() {
-        return nomeCliente;
-    }
-
-    public void setNomeCliente(String nomeCliente) {
-        this.nomeCliente = nomeCliente;
-    }
 
     public String getNomeProduto() {
         return nomeProduto;
