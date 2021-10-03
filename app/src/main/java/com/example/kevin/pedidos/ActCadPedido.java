@@ -16,16 +16,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
@@ -44,7 +49,8 @@ public class ActCadPedido extends AppCompatActivity implements View.OnClickListe
     ArrayList<Pedido> listaPedidos;
     PedidoAdapter myAdapter;
     FirebaseFirestore db;
-    String usuarioId, clienteId;
+    String usuarioId, clienteId, clienteAtual;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +58,9 @@ public class ActCadPedido extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_act_cad_pedido);
 
         iniciaComponentes();
+
+        //Seta o campo edtNomeCliente com o valor passado pelo evento de click
+        edtNomeCliente.setText(clienteAtual);
 
         btnCancelar.setOnClickListener(this);
         btnConfirmar.setOnClickListener(this);
@@ -77,6 +86,38 @@ public class ActCadPedido extends AppCompatActivity implements View.OnClickListe
         usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         db.collection("Usuario/" + usuarioId + "/Clientes")
+                .whereEqualTo("nomeCliente", clienteAtual)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()){
+                            for (QueryDocumentSnapshot doc : task.getResult()){
+                                clienteId = doc.getId();
+                                db.collection("Usuario/" + usuarioId + "/Clientes/" + clienteId + "/Pedidos")
+                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                                                for (DocumentChange dc: value.getDocumentChanges()) {
+                                                    if (error !=null){
+                                                        Log.e("Firestore erro!", "erro!"+error.getMessage());
+                                                        return;
+                                                    }
+                                                    if (dc.getType() == DocumentChange.Type.ADDED){
+                                                        listaPedidos.add(dc.getDocument().toObject(Pedido.class));
+                                                    }
+                                                    myAdapter.notifyDataSetChanged();
+                                                }
+                                            }
+                                        });
+                            }
+                        } else {
+                            Log.d("cli", "Erro ao buscar clientes", task.getException());
+                        }
+                    }
+                });
+        /*
+        db.collection("Usuario/" + usuarioId + "/Clientes")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -85,7 +126,8 @@ public class ActCadPedido extends AppCompatActivity implements View.OnClickListe
                             return;
                         }
                         for (DocumentSnapshot doc : value) {
-                            if (doc != null){
+                            if (doc.get("nomeCliente") == clienteAtual){
+                                Log.d("cli", "Cliente encontrado!");
                                 clienteId = doc.getId();
                                 db.collection("Usuario/" + usuarioId + "/Clientes/" + clienteId + "/Pedidos")
                                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -107,6 +149,7 @@ public class ActCadPedido extends AppCompatActivity implements View.OnClickListe
                         }
                     }
                 });
+         */
     }
 
     private void iniciaComponentes() {
@@ -117,6 +160,8 @@ public class ActCadPedido extends AppCompatActivity implements View.OnClickListe
         btnConfirmar = findViewById(R.id.btnConfPedido);
         spinQuant = findViewById(R.id.edtQuant);
         rv = findViewById(R.id.rv_pedidos);
+        intent = getIntent();
+        clienteAtual = intent.getExtras().getString("Cliente");
     }
 
     @Override

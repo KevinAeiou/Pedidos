@@ -42,6 +42,7 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.meuViewH
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ActCadPedido.class);
+                intent.putExtra("Cliente", clientes.get(position).getNomeCliente());
                 context.startActivity(intent);
             }
         });
