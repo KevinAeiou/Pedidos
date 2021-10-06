@@ -321,7 +321,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$PROJECT_DIR$/../../../../Android/Sdk/icons/material/materialicons/add/baseline_add_24.xml" />
+                                      <entry key="url" value="file:/$PROJECT_DIR$/../../../../Android/Sdk/icons/material/materialicons/delete/baseline_delete_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -331,8 +331,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_add" />
+                            <entry key="outputName" value="ic_delete" />
                             <entry key="sourceFile" value="C:\Users\Kevin\AndroidStudioProjects\Pedidos" />
                           </map>
                         </option>

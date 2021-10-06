@@ -3,6 +3,7 @@ package com.example.kevin.pedidos;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,7 +50,7 @@ public class ActCadPedido extends AppCompatActivity implements View.OnClickListe
     ArrayList<Pedido> listaPedidos;
     PedidoAdapter myAdapter;
     FirebaseFirestore db;
-    String usuarioId, clienteId, clienteAtual;
+    String usuarioId, clienteId, clienteAtual, pedidoId;
     Intent intent;
 
     @Override
@@ -92,8 +93,13 @@ public class ActCadPedido extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()){
-                            for (QueryDocumentSnapshot doc : task.getResult()){
+                            for (DocumentSnapshot doc : task.getResult().getDocuments()){
+                                Log.d("idCliente", "O id do cliente "+ doc.getId());
+
                                 clienteId = doc.getId();
+                                Cliente clienteModel = doc.toObject(Cliente.class);
+                                clienteModel.setClienteId(clienteId);
+
                                 db.collection("Usuario/" + usuarioId + "/Clientes/" + clienteId + "/Pedidos")
                                         .addSnapshotListener(new EventListener<QuerySnapshot>() {
                                             @Override
@@ -104,6 +110,11 @@ public class ActCadPedido extends AppCompatActivity implements View.OnClickListe
                                                         return;
                                                     }
                                                     if (dc.getType() == DocumentChange.Type.ADDED){
+                                                        pedidoId = dc.getDocument().getId();
+
+                                                        Pedido pedidoModel = dc.getDocument().toObject(Pedido.class);
+                                                        pedidoModel.setPedidoId(pedidoId);
+
                                                         listaPedidos.add(dc.getDocument().toObject(Pedido.class));
                                                     }
                                                     myAdapter.notifyDataSetChanged();
@@ -116,52 +127,6 @@ public class ActCadPedido extends AppCompatActivity implements View.OnClickListe
                         }
                     }
                 });
-        /*
-        db.collection("Usuario/" + usuarioId + "/Clientes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if (error !=null){
-                            Log.e("Firestore erro!", "erro!"+error.getMessage());
-                            return;
-                        }
-                        for (DocumentSnapshot doc : value) {
-                            if (doc.get("nomeCliente") == clienteAtual){
-                                Log.d("cli", "Cliente encontrado!");
-                                clienteId = doc.getId();
-                                db.collection("Usuario/" + usuarioId + "/Clientes/" + clienteId + "/Pedidos")
-                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                                                for (DocumentChange dc: value.getDocumentChanges()) {
-                                                    if (error !=null){
-                                                        Log.e("Firestore erro!", "erro!"+error.getMessage());
-                                                        return;
-                                                    }
-                                                    if (dc.getType() == DocumentChange.Type.ADDED){
-                                                        listaPedidos.add(dc.getDocument().toObject(Pedido.class));
-                                                    }
-                                                    myAdapter.notifyDataSetChanged();
-                                                }
-                                            }
-                                        });
-                            }
-                        }
-                    }
-                });
-         */
-    }
-
-    private void iniciaComponentes() {
-        edtNomeCliente = findViewById(R.id.edtCliente);
-        edtNomeProd = findViewById(R.id.edtNomeProduto);
-        edtValor = findViewById(R.id.edtValor);
-        btnCancelar = findViewById(R.id.btnCancPedido);
-        btnConfirmar = findViewById(R.id.btnConfPedido);
-        spinQuant = findViewById(R.id.edtQuant);
-        rv = findViewById(R.id.rv_pedidos);
-        intent = getIntent();
-        clienteAtual = intent.getExtras().getString("Cliente");
     }
 
     @Override
@@ -175,41 +140,13 @@ public class ActCadPedido extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void verificaPedido(final View v) {
-        String nomeCli = edtNomeCliente.getText().toString();
-        String nomeProd = edtNomeProd.getText().toString();
-        String valor = edtValor.getText().toString();
-
-        if (!verificaCampos(nomeCli, nomeProd, valor)){
-            Snackbar snackbar = Snackbar.make(v, menssagens[0], Snackbar.LENGTH_SHORT);
-            snackbar.setBackgroundTint(Color.WHITE);
-            snackbar.setTextColor(Color.BLACK);
-            snackbar.show();
-        }else{
-            salvarCliente();
-            //salvarPedido();
-            startActivity(new Intent(this, ActMain.class));
-            finish();
-        }
-
-    }
-
-    private boolean verificaCampos(String nomeCli, String nomeProd, String valor) {
-        if (nomeCli.isEmpty()||nomeProd.isEmpty()||valor.isEmpty())
-            return false;
-        return true;
-    }
-
-    private void salvarCliente() {
+    private void salvarDados() {
 
         String nomeCli = edtNomeCliente.getText().toString();
 
         String nomeProd = edtNomeProd.getText().toString();
         Double valor = Double.parseDouble(edtValor.getText().toString());
         int quant = spinQuant.getSelectedItemPosition();
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         Map<String, Object> usuario = new HashMap<>();
         Map<String, Object> pedidos = new HashMap<>();
@@ -220,6 +157,49 @@ public class ActCadPedido extends AppCompatActivity implements View.OnClickListe
         pedidos.put("valor", valor);
         pedidos.put("quantidade", quant+1);
 
+        db.collection("Usuario/"+usuarioId+"/Clientes")
+                .whereEqualTo("nomeCliente", nomeCli)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()){
+                            for (QueryDocumentSnapshot document : task.getResult()){
+                                Log.d("idClieente", "O id do cliente "+nomeCli+" é:" +document.getId());
+                                clienteId = document.getId();
+
+                                db.collection("Usuario/" + usuarioId + "/Clientes/" + clienteId + "/Pedidos")
+                                        .add(pedidos);
+                            }
+                        } else {
+                            Log.d("idCliente", "Error getting documents: ", task.getException());
+                        }
+                        myAdapter.notifyDataSetChanged();
+                    }
+                });
+        /*
+        db.collection("Usuario/"+usuarioId+"/Clientes")
+                .whereEqualTo("nomeCliente", nomeCli)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error != null){
+                            Log.w("cli", "Falhou!" + error);
+                            return;
+                        }
+                        for (DocumentChange doc : value.getDocumentChanges()){
+                            switch (doc.getType()){
+                                case ADDED:
+                                    clienteId = doc.getDocument().getId();
+                                    db.collection("Usuario/"+usuarioId+"/Clientes/" + clienteId + "/Pedidos")
+                                            .add(pedidos);
+                                    break;
+                            }
+                        }
+                    }
+                });
+
+        /*
         db.collection("Usuario/"+usuarioId+"/Clientes")
                 .add(usuario)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -238,26 +218,53 @@ public class ActCadPedido extends AppCompatActivity implements View.OnClickListe
                         Log.w("cli", "Error adding document", e);
                     }
                 });
+        */
+    }
+
+    private void excluirDados(){
 
     }
 
-    private void salvarPedido() {
-
+    private void verificaPedido(final View v) {
+        String nomeCli = edtNomeCliente.getText().toString();
         String nomeProd = edtNomeProd.getText().toString();
-        Double valor = Double.parseDouble(edtValor.getText().toString());
-        int quant = spinQuant.getSelectedItemPosition();
+        String valor = edtValor.getText().toString();
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        if (!verificaCampos(nomeCli, nomeProd, valor)){
+            Snackbar snackbar = Snackbar.make(v, menssagens[0], Snackbar.LENGTH_SHORT);
+            snackbar.setBackgroundTint(Color.WHITE);
+            snackbar.setTextColor(Color.BLACK);
+            snackbar.show();
+        }else{
+            salvarDados();
+            ArrayAdapter<String> meuAdaptador = new ArrayAdapter<>(ActCadPedido.this,
+                    android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.numeros));
+            meuAdaptador.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+            edtNomeProd.setText("");
+            edtValor.setText("");
+            spinQuant.setAdapter(meuAdaptador);
+            //salvarPedido();
+        }
 
-        Map<String, Object> pedidos = new HashMap<>();
+    }
 
-        pedidos.put("nomeProduto", nomeProd);
-        pedidos.put("valor", valor);
-        pedidos.put("quantidade", quant+1);
+    private boolean verificaCampos(String nomeCli, String nomeProd, String valor) {
+        if (nomeCli.isEmpty()||nomeProd.isEmpty()||valor.isEmpty())
+            return false;
+        return true;
+    }
 
+    private void iniciaComponentes() {
+        edtNomeCliente = findViewById(R.id.edtCliente);
+        edtNomeProd = findViewById(R.id.edtNomeProduto);
+        edtValor = findViewById(R.id.edtValor);
+        btnCancelar = findViewById(R.id.btnCancPedido);
+        btnConfirmar = findViewById(R.id.btnConfPedido);
+        spinQuant = findViewById(R.id.edtQuant);
+        rv = findViewById(R.id.rv_pedidos);
+        intent = getIntent();
+        clienteAtual = intent.getExtras().getString("Cliente");
+        db = FirebaseFirestore.getInstance();
         usuarioId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-        db.collection("Usuario/"+usuarioId+"/Clientes/" + clienteId + "/Pedidos")
-                .add(pedidos);
     }
 }

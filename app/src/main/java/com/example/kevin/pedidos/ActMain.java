@@ -51,8 +51,8 @@ public class ActMain extends AppCompatActivity {
         iniciarComponentes();
 
         fab.setOnClickListener(v -> {
-            Intent intent = new Intent(ActMain.this, ActCadPedido.class);
-            startActivity(intent);
+            Intent intente = new Intent(ActMain.this, ActCadPedido.class);
+            startActivity(intente);
             finish();
         });
         txtDeslogar.setOnClickListener(v -> {
